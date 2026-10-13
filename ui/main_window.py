@@ -254,9 +254,12 @@ class AppWindow(QMainWindow):
 
     def _reveal(self, path):
         target = path if os.path.isdir(path) else os.path.dirname(path)
-        opener = "open" if sys.platform == "darwin" else "xdg-open"
         try:
-            subprocess.Popen([opener, target])
+            if sys.platform == "win32":
+                os.startfile(target)
+            else:
+                opener = "open" if sys.platform == "darwin" else "xdg-open"
+                subprocess.Popen([opener, target])
         except OSError as error:
             self._note(f"Не открыть {target}: {error}")
 

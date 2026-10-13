@@ -1,4 +1,4 @@
-from PyQt6.QtCore import QEvent, QSize, Qt, pyqtSignal
+from PyQt6.QtCore import QEvent, QRectF, QSize, Qt, pyqtSignal
 from PyQt6.QtGui import QPainter, QPen, QPixmap
 from PyQt6.QtWidgets import (
     QCheckBox,
@@ -94,9 +94,10 @@ class PreviewArea(QLabel):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.fillRect(self.rect(), Theme.SURFACE)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setPen(QPen(Theme.BORDER, 1))
-        painter.drawRect(self.rect().adjusted(0, 0, -1, -1))
+        painter.setBrush(Theme.SURFACE)
+        painter.drawRoundedRect(QRectF(self.rect()).adjusted(0.5, 0.5, -0.5, -0.5), Theme.RADIUS, Theme.RADIUS)
         painter.end()
         if self._source.isNull():
             painter = QPainter(self)
@@ -231,12 +232,6 @@ class SidePanel(QGroupBox):
     def __init__(self, title, parent=None):
         super().__init__(title, parent)
         self.setAlignment(Qt.AlignmentFlag.AlignLeft)
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.fillRect(self.rect(), Theme.PANEL)
-        painter.end()
-        super().paintEvent(event)
 
 
 class CursorCheck(QCheckBox):

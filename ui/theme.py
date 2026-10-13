@@ -1,4 +1,8 @@
+from pathlib import Path
+
 from PyQt6.QtGui import QColor
+
+ASSETS = Path(__file__).resolve().parent / "assets"
 
 
 class Theme:
@@ -9,9 +13,14 @@ class Theme:
     TEXT = QColor(232, 232, 232)
     MUTED = QColor(150, 150, 150)
     ACCENT = QColor(255, 255, 255)
+    RADIUS = 6
+    CONTROL_RADIUS = 4
 
     @staticmethod
     def qss():
+        check = (ASSETS / "check.svg").as_posix()
+        arrow_up = (ASSETS / "arrow-up.svg").as_posix()
+        arrow_down = (ASSETS / "arrow-down.svg").as_posix()
         return f"""
         QWidget {{
             background-color: {Theme.BACKGROUND.name()};
@@ -24,7 +33,7 @@ class Theme:
         QGroupBox {{
             background-color: {Theme.PANEL.name()};
             border: 1px solid {Theme.BORDER.name()};
-            border-radius: 2px;
+            border-radius: {Theme.RADIUS}px;
             margin-top: 10px;
             padding-top: 8px;
             font-weight: 600;
@@ -35,7 +44,9 @@ class Theme:
             left: 10px;
             padding: 0 6px;
             color: {Theme.MUTED.name()};
-            background-color: {Theme.PANEL.name()};
+            background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                stop: 0 {Theme.BACKGROUND.name()}, stop: 0.5 {Theme.BACKGROUND.name()},
+                stop: 0.51 {Theme.PANEL.name()}, stop: 1 {Theme.PANEL.name()});
         }}
         QLabel {{
             background-color: transparent;
@@ -45,7 +56,7 @@ class Theme:
             background-color: {Theme.SURFACE.name()};
             color: {Theme.TEXT.name()};
             border: 1px solid {Theme.BORDER.name()};
-            border-radius: 2px;
+            border-radius: {Theme.CONTROL_RADIUS}px;
             padding: 6px 12px;
             text-align: center;
         }}
@@ -65,7 +76,7 @@ class Theme:
             background-color: {Theme.SURFACE.name()};
             color: {Theme.TEXT.name()};
             border: 1px solid {Theme.BORDER.name()};
-            border-radius: 2px;
+            border-radius: {Theme.CONTROL_RADIUS}px;
             padding: 5px 8px;
             selection-background-color: {Theme.ACCENT.name()};
             selection-color: {Theme.BACKGROUND.name()};
@@ -78,10 +89,9 @@ class Theme:
             width: 18px;
         }}
         QComboBox::down-arrow {{
-            image: none;
-            border-left: 4px solid transparent;
-            border-right: 4px solid transparent;
-            border-top: 5px solid {Theme.TEXT.name()};
+            image: url({arrow_down});
+            width: 10px;
+            height: 6px;
             margin-right: 6px;
         }}
         QComboBox QAbstractItemView {{
@@ -90,24 +100,32 @@ class Theme:
             border: 1px solid {Theme.BORDER.name()};
             selection-background-color: {Theme.ACCENT.name()};
             selection-color: {Theme.BACKGROUND.name()};
+            border-radius: {Theme.CONTROL_RADIUS}px;
             outline: none;
         }}
         QSpinBox::up-button, QSpinBox::down-button {{
             background-color: {Theme.PANEL.name()};
             border-left: 1px solid {Theme.BORDER.name()};
-            width: 16px;
+            width: 18px;
+        }}
+        QSpinBox::up-button {{
+            border-top-right-radius: {Theme.CONTROL_RADIUS}px;
+        }}
+        QSpinBox::down-button {{
+            border-bottom-right-radius: {Theme.CONTROL_RADIUS}px;
+        }}
+        QSpinBox::up-button:hover, QSpinBox::down-button:hover {{
+            background-color: {Theme.BORDER.name()};
         }}
         QSpinBox::up-arrow {{
-            image: none;
-            border-left: 4px solid transparent;
-            border-right: 4px solid transparent;
-            border-bottom: 5px solid {Theme.TEXT.name()};
+            image: url({arrow_up});
+            width: 10px;
+            height: 6px;
         }}
         QSpinBox::down-arrow {{
-            image: none;
-            border-left: 4px solid transparent;
-            border-right: 4px solid transparent;
-            border-top: 5px solid {Theme.TEXT.name()};
+            image: url({arrow_down});
+            width: 10px;
+            height: 6px;
         }}
         QCheckBox {{
             background-color: transparent;
@@ -116,7 +134,8 @@ class Theme:
         QCheckBox::indicator {{
             width: 14px;
             height: 14px;
-            border: 1px solid {Theme.BORDER.name()};
+            border: 1px solid {Theme.MUTED.name()};
+            border-radius: 3px;
             background-color: {Theme.SURFACE.name()};
         }}
         QCheckBox::indicator:hover {{
@@ -125,17 +144,28 @@ class Theme:
         QCheckBox::indicator:checked {{
             background-color: {Theme.ACCENT.name()};
             border-color: {Theme.ACCENT.name()};
+            image: url({check});
+        }}
+        QCheckBox::indicator:checked:hover {{
+            background-color: {Theme.TEXT.name()};
+        }}
+        QCheckBox::indicator:disabled {{
+            border-color: {Theme.BORDER.name()};
+            background-color: {Theme.PANEL.name()};
         }}
         QListWidget {{
             background-color: {Theme.SURFACE.name()};
             alternate-background-color: {Theme.PANEL.name()};
             border: 1px solid {Theme.BORDER.name()};
-            border-radius: 2px;
+            border-radius: {Theme.RADIUS}px;
             outline: none;
         }}
         QListWidget::item {{
             padding: 6px 8px;
             border-bottom: 1px solid {Theme.BACKGROUND.name()};
+        }}
+        QListWidget::item:selected, QListWidget::item:hover {{
+            border-radius: {Theme.CONTROL_RADIUS}px;
         }}
         QListWidget::item:hover {{
             background-color: {Theme.BORDER.name()};
@@ -152,6 +182,7 @@ class Theme:
         }}
         QScrollBar::handle {{
             background-color: {Theme.BORDER.name()};
+            border-radius: 5px;
             min-height: 24px;
             min-width: 24px;
         }}
@@ -179,6 +210,8 @@ class Theme:
             background-color: {Theme.SURFACE.name()};
             color: {Theme.TEXT.name()};
             border: 1px solid {Theme.BORDER.name()};
+            border-radius: {Theme.CONTROL_RADIUS}px;
+            padding: 4px 6px;
         }}
         """
 
